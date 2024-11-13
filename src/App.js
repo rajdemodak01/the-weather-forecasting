@@ -1,24 +1,27 @@
-import React, { useState } from 'react';
-import { Box, Container, Grid, Link, SvgIcon, Typography } from '@mui/material';
-import Search from './components/Search/Search';
-import WeeklyForecast from './components/WeeklyForecast/WeeklyForecast';
-import TodayWeather from './components/TodayWeather/TodayWeather';
-import { fetchWeatherData } from './api/OpenWeatherService';
-import { transformDateFormat } from './utilities/DatetimeUtils';
-import UTCDatetime from './components/Reusable/UTCDatetime';
-import LoadingBox from './components/Reusable/LoadingBox';
-import { ReactComponent as SplashIcon } from './assets/splash-icon.svg';
-import Logo from './assets/logo.png';
-import ErrorBox from './components/Reusable/ErrorBox';
-import { ALL_DESCRIPTIONS } from './utilities/DateConstants';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import React, { useState } from "react";
+import { Box, Container, Grid, Link, SvgIcon, Typography } from "@mui/material";
+import Search from "./components/Search/Search";
+import WeeklyForecast from "./components/WeeklyForecast/WeeklyForecast";
+import TodayWeather from "./components/TodayWeather/TodayWeather";
+import { fetchWeatherData } from "./api/OpenWeatherService";
+import { transformDateFormat } from "./utilities/DatetimeUtils";
+import UTCDatetime from "./components/Reusable/UTCDatetime";
+import LoadingBox from "./components/Reusable/LoadingBox";
+import { ReactComponent as SplashIcon } from "./assets/splash-icon.svg";
+import Logo from "./assets/logo.png";
+import ErrorBox from "./components/Reusable/ErrorBox";
+import { ALL_DESCRIPTIONS } from "./utilities/DateConstants";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import Register from "./auth/register.js";
+
 import {
   getTodayForecastWeather,
   getWeekForecastWeather,
-} from './utilities/DataUtils';
+} from "./utilities/DataUtils";
+import { useSelector } from "react-redux";
 
 function App() {
-  // console.log("here inside app.js");
+  const isRegistered = useSelector((state) => state.isRegisterSlice.status);
   const [todayWeather, setTodayWeather] = useState(null);
   const [todayForecast, setTodayForecast] = useState([]);
   const [weekForecast, setWeekForecast] = useState(null);
@@ -26,7 +29,7 @@ function App() {
   const [error, setError] = useState(false);
 
   const searchChangeHandler = async (enteredData) => {
-    const [latitude, longitude] = enteredData.value.split(' ');
+    const [latitude, longitude] = enteredData.value.split(" ");
 
     setIsLoading(true);
 
@@ -69,26 +72,26 @@ function App() {
       alignItems="center"
       justifyContent="center"
       sx={{
-        width: '100%',
-        minHeight: '500px',
+        width: "100%",
+        minHeight: "500px",
       }}
     >
       <SvgIcon
         component={SplashIcon}
         inheritViewBox
-        sx={{ fontSize: { xs: '100px', sm: '120px', md: '140px' } }}
+        sx={{ fontSize: { xs: "100px", sm: "120px", md: "140px" } }}
       />
       <Typography
         variant="h4"
         component="h4"
         sx={{
-          fontSize: { xs: '12px', sm: '14px' },
-          color: 'rgba(255,255,255, .85)',
-          fontFamily: 'Poppins',
-          textAlign: 'center',
-          margin: '2rem 0',
-          maxWidth: '80%',
-          lineHeight: '22px',
+          fontSize: { xs: "12px", sm: "14px" },
+          color: "rgba(255,255,255, .85)",
+          fontFamily: "Poppins",
+          textAlign: "center",
+          margin: "2rem 0",
+          maxWidth: "80%",
+          lineHeight: "22px",
         }}
       >
         Explore current weather data and 6-day forecast of more than 200,000
@@ -126,11 +129,11 @@ function App() {
     appContent = (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          minHeight: '500px',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          minHeight: "500px",
         }}
       >
         <LoadingBox value="1">
@@ -138,10 +141,10 @@ function App() {
             variant="h3"
             component="h3"
             sx={{
-              fontSize: { xs: '10px', sm: '12px' },
-              color: 'rgba(255, 255, 255, .8)',
+              fontSize: { xs: "10px", sm: "12px" },
+              color: "rgba(255, 255, 255, .8)",
               lineHeight: 1,
-              fontFamily: 'Poppins',
+              fontFamily: "Poppins",
             }}
           >
             Loading...
@@ -152,66 +155,72 @@ function App() {
   }
 
   return (
-    <Container
-      sx={{
-        maxWidth: { xs: '95%', sm: '80%', md: '1100px' },
-        width: '100%',
-        height: '100%',
-        margin: '0 auto',
-        padding: '1rem 0 3rem',
-        marginBottom: '1rem',
-        borderRadius: {
-          xs: 'none',
-          sm: '0 0 1rem 1rem',
-        },
-        boxShadow: {
-          xs: 'none',
-          sm: 'rgba(0,0,0, 0.5) 0px 10px 15px -3px, rgba(0,0,0, 0.5) 0px 4px 6px -2px',
-        },
-      }}
-    >
-      <Grid container columnSpacing={2}>
-        <Grid item xs={12}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{
-              width: '100%',
-              marginBottom: '1rem',
-            }}
-          >
-            <Box
-              component="img"
-              sx={{
-                height: { xs: '16px', sm: '22px', md: '26px' },
-                width: 'auto',
-              }}
-              alt="logo"
-              src={Logo}
-            />
-
-            <UTCDatetime />
-            <Link
-              href="https://github.com/rajdemodak01"
-              target="_blank"
-              underline="none"
-              sx={{ display: 'flex' }}
-            >
-              <GitHubIcon
+    <>
+      {isRegistered ? (
+        <Container
+          sx={{
+            maxWidth: { xs: "95%", sm: "80%", md: "1100px" },
+            width: "100%",
+            height: "100%",
+            margin: "0 auto",
+            padding: "1rem 0 3rem",
+            marginBottom: "1rem",
+            borderRadius: {
+              xs: "none",
+              sm: "0 0 1rem 1rem",
+            },
+            boxShadow: {
+              xs: "none",
+              sm: "rgba(0,0,0, 0.5) 0px 10px 15px -3px, rgba(0,0,0, 0.5) 0px 4px 6px -2px",
+            },
+          }}
+        >
+          <Grid container columnSpacing={2}>
+            <Grid item xs={12}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
                 sx={{
-                  fontSize: { xs: '20px', sm: '22px', md: '26px' },
-                  color: 'white',
-                  '&:hover': { color: '#2d95bd' },
+                  width: "100%",
+                  marginBottom: "1rem",
                 }}
-              />
-            </Link>
-          </Box>
-          <Search onSearchChange={searchChangeHandler} />
-        </Grid>
-        {appContent}
-      </Grid>
-    </Container>
+              >
+                <Box
+                  component="img"
+                  sx={{
+                    height: { xs: "16px", sm: "22px", md: "26px" },
+                    width: "auto",
+                  }}
+                  alt="logo"
+                  src={Logo}
+                />
+
+                <UTCDatetime />
+                <Link
+                  href="https://github.com/rajdemodak01"
+                  target="_blank"
+                  underline="none"
+                  sx={{ display: "flex" }}
+                >
+                  <GitHubIcon
+                    sx={{
+                      fontSize: { xs: "20px", sm: "22px", md: "26px" },
+                      color: "white",
+                      "&:hover": { color: "#2d95bd" },
+                    }}
+                  />
+                </Link>
+              </Box>
+              <Search onSearchChange={searchChangeHandler} />
+            </Grid>
+            {appContent}
+          </Grid>
+        </Container>
+      ) : (
+        <Register />
+      )}
+    </>
   );
 }
 
