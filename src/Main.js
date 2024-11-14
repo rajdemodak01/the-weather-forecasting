@@ -12,14 +12,15 @@ function Main() {
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-
+        console.log("inside checkAuth");
+        
         if (token) {
           const response = await axios.get(`${process.env.REACT_APP_PORT}/auth/current-user`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-
+          
           if (response.status === 200) {
             dispatch(setLoginStatus(true));
           } else {
@@ -32,6 +33,8 @@ function Main() {
         console.error("Error checking authentication", error);
         dispatch(setLoginStatus(false)); 
       } finally {
+        console.log("outside checkAuth");
+        console.log(process.env.REACT_APP_PORT)
         setLoading(false); 
       }
     };
