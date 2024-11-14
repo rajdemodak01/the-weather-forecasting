@@ -1,7 +1,25 @@
 import { User } from "../model/user.model.js";
 import { OTP } from "../model/otp.model.js";
-import sgMail from "@sendgrid/mail"
+import sgMail from "@sendgrid/mail";
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import jwt from "jsonwebtoken"
+
+const generateAccessAndRefreshToken = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch {
+    throw new Error(
+      "Something went wrong, while generating access and refresh token"
+    );
+  }
+};
 
 const generateOtp = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
@@ -17,40 +35,138 @@ const registerUser = async (req, res) => {
   if (existedUser) {
     throw new Error("user already present");
   }
-  
+
   const user = await User.create({
     email,
     password,
     username,
   });
 
-  const createdUser = await User.findById(user._id).select("-password");
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
   if (!createdUser) {
     throw new Error("Error while creating user");
   }
 
   return res.status(200).json(createdUser);
 };
-const loginUser= async(req, res)=>{
-  const {email, password} = req.body;
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
   if (!email || !password) {
     throw new Error("Username and password is required to login");
   }
-  const user = await User.findOne( {email});
-  if(!user){
-    throw new Error("user not exist")
+  const user = await User.findOne({ email });
+  if (!user) {
+    // throw new Error("user not exist");
+    console.log("user not exist")
+    return res
+    .status(401)
+    .json("User not exist")
   }
-  const isPasswordValid= await user.isPasswordValid(password);
-  if(!isPasswordValid){
-    throw new Error("Password is invalid");
+  const isPasswordValid = await user.isPasswordCorrect(password);
+  if (!isPasswordValid) {
+    // throw new Error("Password is invalid");
+    console.log("invalid password")
+    return res
+    .status(401)
+    .json("invalid password")
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+console.log("login successful");
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json({ user: loggedInUser, accessToken, refreshToken });
+};
+
+const logoutUser = async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json("User logged out");
+};
+
+const refreshAccessToken = async (req, res) => {
+  const incomingRefreshToken=req.cookies.refreshToken || req.body.refreshToken
+  if(!incomingRefreshToken){
+    throw new Error("unauthorized request")
+  }
+  const decodedToken = jwt.verify(
+    incomingRefreshToken,
+    process.env.REFRESH_TOKEN_SECRET
+  )
+  const user = await User.findById(decodedToken?._id)
+  if(!user){
+    throw new Error("Invalid refresh Token")
+  }
+
+  if(incomingRefreshToken !== user?.refreshToken){
+    throw new Error( "Refresh token is expired or used")
+  }
+
+  try {
+    const options={
+      httpOnly:true,
+      secure:true
+    }
+  
+    const {accessToken,newRefreshToken} = await generateAccessAndRefreshToken(user._id)
+  
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", newRefreshToken, options)
+    .json(
+        {
+          accessToken,
+          refreshToken : newRefreshToken,
+        }
+    )
+  } catch (error) {
+    throw new Error(error?.message || "Invalid refresh token")
+  }
+};
+
+const getCurrentUser= async(req, res)=>{
+  if(!req.user){
+    return res
+    .status(400)
+    .json("User not authorized")
   }
   return res
   .status(200)
-  .json(user)
-}
-
-const logoutUser = async (req, res)=>{
-  
+  .json(
+    req.user
+  )
 }
 
 const sendOtp = async (req, res) => {
@@ -64,7 +180,7 @@ const sendOtp = async (req, res) => {
     const otp = generateOtp();
     const expiresAt = Date.now() + 5 * 60 * 1000;
 
-    await OTP.deleteMany({email})
+    await OTP.deleteMany({ email });
     const createdOTP = await OTP.create({
       email,
       otp,
@@ -117,9 +233,17 @@ const verifyOtp = async (req, res) => {
   if (otpDocument.otp !== otp) {
     return res.status(400).json({ message: "Wrong OTP" });
   }
-  
-  await OTP.deleteMany({email})
+
+  await OTP.deleteMany({ email });
   return res.status(200).json({ message: "otp matched successfully" });
 };
 
-export { registerUser, verifyOtp, sendOtp };
+export { 
+  registerUser, 
+  verifyOtp, 
+  sendOtp, 
+  loginUser, 
+  logoutUser,
+  refreshAccessToken,
+  getCurrentUser,
+};

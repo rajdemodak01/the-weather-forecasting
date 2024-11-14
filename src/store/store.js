@@ -3,21 +3,21 @@ const initialState={
     status:false
 }
 
-const isRegisterSlice=createSlice({
-    name:'isRegisterSlice',
+const authSlice=createSlice({
+    name:'auth',
     initialState,
     reducers:{
-        toggleRegister:(state)=>{
-            state.status=!state.status
-        }
+        setLoginStatus:(state, action) => {
+            state.status = action.payload;
+          },
     }
 })
 
-export const {toggleRegister}=isRegisterSlice.actions;
+export const {setLoginStatus}=authSlice.actions;
 
 const store = configureStore({
     reducer: {
-        isRegisterSlice: isRegisterSlice.reducer,
+        auth: authSlice.reducer,
     },
 });
 

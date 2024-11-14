@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Container, Grid, Link, SvgIcon, Typography } from "@mui/material";
+import { Box, Container, Grid, SvgIcon, Typography } from "@mui/material";
 import Search from "./components/Search/Search";
 import WeeklyForecast from "./components/WeeklyForecast/WeeklyForecast";
 import TodayWeather from "./components/TodayWeather/TodayWeather";
@@ -11,22 +11,28 @@ import { ReactComponent as SplashIcon } from "./assets/splash-icon.svg";
 import Logo from "./assets/logo.png";
 import ErrorBox from "./components/Reusable/ErrorBox";
 import { ALL_DESCRIPTIONS } from "./utilities/DateConstants";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import Register from "./auth/register.js";
+// import GitHubIcon from "@mui/icons-material/GitHub";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux"; // Import useDispatch
+import { setLoginStatus } from "./store/store.js";
+// import Register from "./auth/register.js";
 
 import {
   getTodayForecastWeather,
   getWeekForecastWeather,
 } from "./utilities/DataUtils";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 function App() {
-  const isRegistered = useSelector((state) => state.isRegisterSlice.status);
+  // const isRegistered = useSelector((state) => state.isRegisterSlice.status);
   const [todayWeather, setTodayWeather] = useState(null);
   const [todayForecast, setTodayForecast] = useState([]);
   const [weekForecast, setWeekForecast] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  const navigate=useNavigate()
+  const dispatch=useDispatch()
 
   const searchChangeHandler = async (enteredData) => {
     const [latitude, longitude] = enteredData.value.split(" ");
@@ -154,9 +160,48 @@ function App() {
     );
   }
 
+
+  const handleLogout = async () => {
+    try {
+      // Send logout request to backend (optional, but will help clean up any session server-side)
+      const token = localStorage.getItem("accessToken");
+      // console.log(`Token from app.js inside handleLogout is ${token}`)
+      if (!token) {
+        // If no token is found in localStorage, just log the user out
+        alert("No token found, logging out...");
+        dispatch(setLoginStatus(false)); // Update Redux state
+        navigate("/login"); // Navigate to login page
+        return;
+      }
+      const response = await axios.post(`${process.env.REACT_APP_PORT}/auth/logout`, {},{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.status === 200) {
+        // Clear accessToken from localStorage
+        localStorage.removeItem("accessToken");
+  
+        // Dispatch logout action to update Redux state
+        dispatch(setLoginStatus(false));
+  
+        // Redirect the user to the login page
+        navigate("/login");
+  
+        alert("Logout successful");
+      } else {
+        alert("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error logging out", error);
+      alert("An error occurred while logging out");
+    }
+  };
+  
   return (
     <>
-      {isRegistered ? (
+      {/* {isRegistered ? ( */}
         <Container
           sx={{
             maxWidth: { xs: "95%", sm: "80%", md: "1100px" },
@@ -197,7 +242,7 @@ function App() {
                 />
 
                 <UTCDatetime />
-                <Link
+                {/* <Link
                   href="https://github.com/rajdemodak01"
                   target="_blank"
                   underline="none"
@@ -210,16 +255,19 @@ function App() {
                       "&:hover": { color: "#2d95bd" },
                     }}
                   />
-                </Link>
+                </Link> */}
+                <button onClick={handleLogout}>
+                  logout
+                </button>
               </Box>
               <Search onSearchChange={searchChangeHandler} />
             </Grid>
             {appContent}
           </Grid>
         </Container>
-      ) : (
-        <Register />
-      )}
+      {/* ) : ( */}
+        {/* <Register /> */}
+      {/* )} */}
     </>
   );
 }

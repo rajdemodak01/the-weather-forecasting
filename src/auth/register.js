@@ -2,9 +2,11 @@ import { useState } from "react";
 import React from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { toggleRegister } from "../store/store";
+import { setLoginStatus } from "../store/store.js";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
+  const navigate=useNavigate()
   const dispatch=useDispatch()
   const [email, setEmail] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -25,7 +27,7 @@ export default function Register() {
       });
       
       if (response.ok) {
-        const responseData = await response.json();  
+        await response.json();  
         alert("OTP sent successfully");
         setIsOtpSent(true);
       } else {
@@ -64,7 +66,20 @@ export default function Register() {
       });
       if (response.status === 200) {
         alert("registration successful");
-        dispatch(toggleRegister())
+        const loginResponse = await axios.post(`${process.env.REACT_APP_PORT}/auth/login`, {
+          email,
+          password,
+        });
+        if (loginResponse.status === 200) {
+          // console.log(response.data)
+          const { accessToken } = loginResponse.data; 
+          localStorage.setItem("accessToken", accessToken);
+          alert("Login successful");
+          dispatch(setLoginStatus(true)); 
+          navigate("/home"); 
+        } else {
+          alert("Invalid credentials");
+        }
       }
     } catch (error) {
       console.error("Error during registration:", error);
@@ -120,6 +135,9 @@ export default function Register() {
         <button onClick={handleRegister} disabled={!isEmailVerified}>
           Register
         </button>
+      </div>
+      <div>
+        <button onClick={() => navigate("/login")}>Login</button>
       </div>
     </div>
   );
