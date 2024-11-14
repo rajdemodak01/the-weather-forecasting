@@ -5,7 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules server.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules server.js",
+    "build": "echo 'Build step not required for backend-only server'",
+    "start": "node -r dotenv/config --experimental-json-modules server.js"
   },
   "author": "",
   "license": "ISC",
