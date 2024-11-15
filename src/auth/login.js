@@ -82,57 +82,76 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      {error && <p className="error">{error}</p>}
-
-      <form onSubmit={isOtpVerified ? handlePasswordSubmit : isOtpSent ? handleOtpSubmit : handleEmailSubmit}>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isOtpSent} // Disable email field if OTP is sent
-          />
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-500 to-teal-500">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+  
+        <form onSubmit={isOtpVerified ? handlePasswordSubmit : isOtpSent ? handleOtpSubmit : handleEmailSubmit}>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isOtpSent}
+              placeholder="Enter your email"
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+  
+          {isOtpSent && (
+            <div className="mb-4">
+              <label htmlFor="otp" className="block text-sm font-medium text-gray-700">OTP</label>
+              <input
+                id="otp"
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+                disabled={isOtpVerified}
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          )}
+  
+          {isOtpVerified && (
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          )}
+  
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 mt-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+          >
+            {loading ? "Processing..." : isOtpVerified ? "Login" : isOtpSent ? "Verify OTP" : "Send OTP"}
+          </button>
+        </form>
+  
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => navigate("/register")}
+            className="text-blue-600 hover:text-blue-800"
+          >
+            Register
+          </button>
         </div>
-
-        {isOtpSent && (
-          <div>
-            <label>OTP</label>
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-              disabled={isOtpVerified} // Disable OTP field if verified
-            />
-          </div>
-        )}
-
-        {isOtpVerified && (
-          <div>
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-        )}
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Processing..." : isOtpVerified ? "Login" : isOtpSent ? "Verify OTP" : "Send OTP"}
-        </button>
-      </form>
-
-      <div>
-        <button onClick={() => navigate("/register")}>Register</button>
       </div>
     </div>
   );
+  
 }
 
 export default Login;

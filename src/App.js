@@ -201,73 +201,32 @@ function App() {
   
   return (
     <>
-      {/* {isRegistered ? ( */}
-        <Container
-          sx={{
-            maxWidth: { xs: "95%", sm: "80%", md: "1100px" },
-            width: "100%",
-            height: "100%",
-            margin: "0 auto",
-            padding: "1rem 0 3rem",
-            marginBottom: "1rem",
-            borderRadius: {
-              xs: "none",
-              sm: "0 0 1rem 1rem",
-            },
-            boxShadow: {
-              xs: "none",
-              sm: "rgba(0,0,0, 0.5) 0px 10px 15px -3px, rgba(0,0,0, 0.5) 0px 4px 6px -2px",
-            },
-          }}
-        >
-          <Grid container columnSpacing={2}>
-            <Grid item xs={12}>
+     <Container className="max-w-full sm:max-w-[80%] md:max-w-[1100px] mx-auto my-4 px-4 py-12 rounded-3xl shadow-sm sm:shadow-xl bg-gradient-to-r from-blue-500 to-teal-500">
+        <Grid container columnSpacing={2}>
+          <Grid item xs={12}>
+            <Box className="flex justify-between items-center w-full mb-4">
               <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{
-                  width: "100%",
-                  marginBottom: "1rem",
-                }}
+                component="img"
+                className="h-4 sm:h-5 md:h-6"
+                alt="logo"
+                src={Logo}
+              />
+              <UTCDatetime />
+              {/* <Link href="https://github.com/rajdemodak01" target="_blank" className="flex">
+                <GitHubIcon className="text-white text-xl sm:text-2xl md:text-3xl hover:text-[#2d95bd]" />
+              </Link> */}
+              <button
+                onClick={handleLogout}
+                className="bg-transparent border-none text-white text-sm sm:text-base cursor-pointer"
               >
-                <Box
-                  component="img"
-                  sx={{
-                    height: { xs: "16px", sm: "22px", md: "26px" },
-                    width: "auto",
-                  }}
-                  alt="logo"
-                  src={Logo}
-                />
-
-                <UTCDatetime />
-                {/* <Link
-                  href="https://github.com/rajdemodak01"
-                  target="_blank"
-                  underline="none"
-                  sx={{ display: "flex" }}
-                >
-                  <GitHubIcon
-                    sx={{
-                      fontSize: { xs: "20px", sm: "22px", md: "26px" },
-                      color: "white",
-                      "&:hover": { color: "#2d95bd" },
-                    }}
-                  />
-                </Link> */}
-                <button onClick={handleLogout}>
-                  logout
-                </button>
-              </Box>
-              <Search onSearchChange={searchChangeHandler} />
-            </Grid>
-            {appContent}
+                Logout
+              </button>
+            </Box>
+            <Search onSearchChange={searchChangeHandler} />
           </Grid>
-        </Container>
-      {/* ) : ( */}
-        {/* <Register /> */}
-      {/* )} */}
+          {appContent}
+        </Grid>
+      </Container>
     </>
   );
 }

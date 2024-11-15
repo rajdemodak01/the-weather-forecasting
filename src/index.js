@@ -53,8 +53,17 @@ const router = createBrowserRouter([
   },
 ]);
 
+const TestTailwind = () => {
+  return (
+    <div className="min-h-screen bg-blue-200 flex items-center justify-center">
+      <h1 className="text-4xl font text-white">Tailwind is working!</h1>
+    </div>
+  );
+};
+
 root.render(
     <Provider store={store}>
       <RouterProvider router={router} />
+      {/* <TestTailwind /> */}
     </Provider>
   );
