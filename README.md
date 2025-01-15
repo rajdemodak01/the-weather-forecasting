@@ -1,4 +1,4 @@
-![Application screenshot](./public/screenshot.png)
+<!--![Application screenshot](./public/screenshot.png)
 
 <br/>
 <br/>
@@ -7,33 +7,32 @@ With [The Weather Forecasting] user can search locations by city name and observ
 <br />
 The app is developed using React.js and material-UI.
 
-<br/>
+<br/>-->
 
 ## 💻 Live Demo:
-
 
 to be updated
 
 
-## ⚡ Install
+<!--## ⚡ Install
 
 -Clone the repository:
 
 ```bash
 git clone https://github.com/rajdemodak01/the-weather-forecasting.git
 
-```
+```-->
 
-- Install the packages using the command `npm install`
+<!--- Install the packages using the command `npm install`-->
 
 <br/>
-
+<!--
 ## 📙 Used libraries
 
 - `react-js`
 - `material-ui`
 
 Check `packages.json` for details
-
+-->
 <br/>
 Thank You ☺
