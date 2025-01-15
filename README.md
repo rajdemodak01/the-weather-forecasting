@@ -9,10 +9,11 @@ The app is developed using React.js and material-UI.
 
 <br/>-->
 
-## 💻 Live Demo:
+<!--## 💻 Live Demo:
 
 to be updated
-
+-->
+## Built a React.js weather app with user login and registration, providing daily forecasts using weather APIs.
 
 <!--## ⚡ Install
 
