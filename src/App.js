@@ -31,8 +31,8 @@ function App() {
   const [weekForecast, setWeekForecast] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-  const navigate=useNavigate()
-  const dispatch=useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const searchChangeHandler = async (enteredData) => {
     const [latitude, longitude] = enteredData.value.split(" ");
@@ -160,7 +160,6 @@ function App() {
     );
   }
 
-
   const handleLogout = async () => {
     try {
       // Send logout request to backend (optional, but will help clean up any session server-side)
@@ -173,22 +172,26 @@ function App() {
         navigate("/login"); // Navigate to login page
         return;
       }
-      const response = await axios.post(`${process.env.REACT_APP_PORT}/auth/logout`, {},{
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
+      const response = await axios.post(
+        `${process.env.REACT_APP_PORT}/auth/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       if (response.status === 200) {
         // Clear accessToken from localStorage
         localStorage.removeItem("accessToken");
-  
+
         // Dispatch logout action to update Redux state
         dispatch(setLoginStatus(false));
-  
+
         // Redirect the user to the login page
         navigate("/login");
-  
+
         alert("Logout successful");
       } else {
         alert("Logout failed");
@@ -198,10 +201,10 @@ function App() {
       alert("An error occurred while logging out");
     }
   };
-  
+
   return (
     <>
-     <Container className="max-w-full sm:max-w-[80%] md:max-w-[1100px] mx-auto my-4 px-4 py-12 rounded-3xl shadow-sm sm:shadow-xl bg-gradient-to-r from-blue-500 to-teal-500">
+      <Container className="max-w-full sm:max-w-[80%] md:max-w-[1100px] mx-auto my-4 px-4 py-12 rounded-3xl shadow-sm sm:shadow-xl bg-gradient-to-r from-blue-500 to-teal-500">
         <Grid container columnSpacing={2}>
           <Grid item xs={12}>
             <Box className="flex justify-between items-center w-full mb-4">
@@ -215,12 +218,12 @@ function App() {
               {/* <Link href="https://github.com/rajdemodak01" target="_blank" className="flex">
                 <GitHubIcon className="text-white text-xl sm:text-2xl md:text-3xl hover:text-[#2d95bd]" />
               </Link> */}
-              <button
+              {/* <button
                 onClick={handleLogout}
                 className="bg-transparent border-none text-white text-sm sm:text-base cursor-pointer"
               >
                 Logout
-              </button>
+              </button> */}
             </Box>
             <Search onSearchChange={searchChangeHandler} />
           </Grid>
